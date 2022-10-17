@@ -209,6 +209,7 @@ This renders the `index.html` file that will be used to interact with the backen
 - `400` If the freet content is empty or a stream of empty spaces
 - `413` If the freet content is more than 140 characters long
 
+
 #### `DELETE /api/freets/:freetId?` - Delete an existing freet
 
 **Returns**
@@ -313,3 +314,197 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
+
+#### `GET /api/hashtags` - Get all the hashtags
+
+**Returns**
+
+- An array of all hashtags sorted in descending order by date created
+
+#### `GET /api/freets?hashtag=HASHTAG` - Get freets with hashtag
+
+**Returns**
+
+- An array of freets created with the hashtag `hashtag`
+
+**Throws**
+
+- `400` if `hashtag` is not given
+- `404` if `hashtag` is not a recognized hashtag
+
+
+#### `Post /api/hashtags` - create a new hashtag
+
+**Body**
+
+- `content` _{string}_ - The name of the hashtag
+
+**Returns**
+
+- A success message
+- A object with the created hashtag
+
+**Throws**
+
+- `403` if the user is not logged in
+- `400` If the hashtag content is empty or a stream of empty spaces
+- `413` If the hashtag content is more than 140 characters long
+
+#### `DELETE /api/freet?hashtag=hashtagId` - Delete an existing hashtag from a freet
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `403` if the user is not logged in
+- `403` if the user is not the author of the freet
+- `404` if the freetId is invalid
+- `405` if the hashtagID is invalid
+
+#### `Post /api/follow` - add the object to the list of objects that are followed
+
+**body**
+
+- `otherUserId`|`hashtagId`- _{string}_ - the Id of the object the `user` wants to follow
+
+**Returns**
+
+- A success message
+- A follow object
+
+**Throws**
+
+- `403` - if the user already follows the object
+- `404` - if the user is not found
+- `405` - if the user is not logged in
+
+#### `Delete /api/follow/:followId` - remove the object from the list of objects that are followed
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `403` - if the user is not logged in or the user is not the follower in the follow 
+- `404` - if the user does not follow the object
+
+#### `GET /api/anonymous-freets` - Get all the anonymous freets
+
+**Returns**
+
+- An array of all anonymous freets sorted in descending order by date modified
+
+#### `GET /api/anonymous-freets?author=USERNAME` - Get anonymous-freets by author
+
+**Returns**
+
+- An array of anonymous-freets created by user with username `author`
+
+**Throws**
+
+- `400` if `author` is not given
+- `404` if `author` is not a recognized username of any user
+
+#### `POST /api/anonymous-freets` - Create a new anonymous-freet
+
+**Body**
+
+- `content` _{string}_ - The content of the anonymous-freet
+- `anonymousTo` _set{user}_ -the users that will not see the user
+
+**Returns**
+
+- A success message
+- A object with the created anonymous-freet
+
+**Throws**
+
+- `403` if the user is not logged in
+- `400` If the freet content is empty or a stream of empty spaces
+- `413` If the freet content is more than 140 characters long
+
+
+#### `DELETE /api/anonymous-freets/:anonymous-freetId?` - Delete an existing freet
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `403` if the user is not logged in
+- `403` if the user is not the author of the anonymous-freet
+- `404` if the anonymous-freetId is invalid
+
+#### `PUT /api/anonymous-freets/:anonymous-freetId?` - Update an existing anonymous-freet
+
+**Body**
+
+- `content` _{string}_ - The new content of the anonymous-freet
+
+**Returns**
+
+- A success message
+- An object with the updated freet
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the anonymous-freetId is invalid
+- `403` if the user is not the author of the anonymous-freet
+- `400` if the new anonymous-freet content is empty or a stream of empty spaces
+- `413` if the new anonymous-freet content is more than 140 characters long
+
+#### `PUT /api/anonymous-freets/:anonymous-freetID?` - Update an existing anonymous-freets users who can see the user
+
+**Body**
+
+- `anonymous-to` _set{user}_ -the users that will not see the user
+
+**Returns**
+
+- A success message
+- A object with the created anonymous-freet
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the anonymous-freetId is invalid
+- `403` if the user is not the author of the anonymous-freet
+- `400` if the new anonymous-freet content is empty or a stream of empty spaces
+- `413` if the new anonymous-freet content is more than 140 characters long
+
+#### `GET /api/feed` - Get all the freets or anonymous freets from any object that the user follows 
+
+**Returns**
+
+- An array of all freets and anonymous freets sorted in descending order by date modified
+
+#### `Post /api/Mute-topics/` - add the topics given to the list of muted topics
+
+**Body**
+
+- `topics` _set{string}_ - the topics that will be added to the muted list
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `403` if the user is not logged in
+- `400` if the set of topics has a topic that is empty or a stream of empty spaces
+
+#### `Get /api/Mute-topics/suggestions/:topic?` - get topics that are related to the inserted topic 
+
+**Returns**
+
+- a set of topics that are closely related to `topic`
+
+**Throws**
+
+- `403` if the user is not logged in
+- `400` if the set of topics has a topic that is empty or a stream of empty spaces

@@ -2,6 +2,7 @@ import type {Request, Response, NextFunction} from 'express';
 import {Types} from 'mongoose';
 import FreetCollection from '../freet/collection';
 
+
 /**
  * Checks if a freet with freetId is req.params exists
  */
