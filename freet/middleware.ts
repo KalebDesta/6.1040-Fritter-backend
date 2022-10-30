@@ -1,6 +1,7 @@
 import type {Request, Response, NextFunction} from 'express';
 import {Types} from 'mongoose';
 import FreetCollection from '../freet/collection';
+import { ViewerTypes } from './model';
 
 
 /**
@@ -20,6 +21,24 @@ const isFreetExists = async (req: Request, res: Response, next: NextFunction) =>
 
   next();
 };
+
+/**
+ * Checks if the anonymousTo of a freet is valid, i.e within the ViewerType 
+ * enumeration definition
+ */
+const isValidAnonymousRequest = async (req: Request, res: Response, next: NextFunction| undefined) => {
+  const {anonymousTo} = req.body as {anonymousTo: string};
+  if (!(anonymousTo in ViewerTypes)){
+    res.status(406).json({
+      error: "A freet can only be anonymous to: none, followers, nonFollowers, all"
+    });
+    return;
+  }
+  if (next !== undefined){
+    next();
+  };
+  return;
+}
 
 /**
  * Checks if the content of the freet in req.body is valid, i.e not a stream of empty
@@ -63,5 +82,6 @@ const isValidFreetModifier = async (req: Request, res: Response, next: NextFunct
 export {
   isValidFreetContent,
   isFreetExists,
-  isValidFreetModifier
+  isValidFreetModifier,
+  isValidAnonymousRequest
 };

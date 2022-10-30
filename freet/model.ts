@@ -2,6 +2,12 @@ import type {Types, PopulatedDoc, Document} from 'mongoose';
 import {Schema, model} from 'mongoose';
 import type {User} from '../user/model';
 
+export enum ViewerTypes {
+  None = "None", 
+  Followers = "Followers", 
+  NonFollowers = "NonFollowers", 
+  All = "All"
+}
 /**
  * This file defines the properties stored in a Freet
  * DO NOT implement operations here ---> use collection file
@@ -13,6 +19,7 @@ export type Freet = {
   authorId: Types.ObjectId;
   dateCreated: Date;
   content: string;
+  anonymousTo: ViewerTypes;
   dateModified: Date;
 };
 
@@ -21,6 +28,7 @@ export type PopulatedFreet = {
   authorId: User;
   dateCreated: Date;
   content: string;
+  anonymousTo: ViewerTypes;
   dateModified: Date;
 };
 
@@ -44,6 +52,11 @@ const FreetSchema = new Schema<Freet>({
   content: {
     type: String,
     required: true
+  },
+  //the viewers to whom the freet is anonymous to
+  anonymousTo:{
+    type: String,
+    required: true,
   },
   // The date the freet was modified
   dateModified: {

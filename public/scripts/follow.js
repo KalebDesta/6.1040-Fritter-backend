@@ -8,6 +8,10 @@ function unfollowUser(fields) {
     fetch(`/api/follow/${fields.username}`, {method: 'DELETE'})
       .then(showResponse)
       .catch(showResponse);
-  }
-
+}
+function getFollowing(fields) {
+    fetch(`/api/follow/`,{method:'GET'})
+      .then(showResponse)
+      .catch(showResponse);
+}
 // export {unfollowUser,followUser}

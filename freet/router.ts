@@ -27,6 +27,9 @@ const router = express.Router();
  */
 router.get(
   '/',
+  [
+    userValidator.isUserLoggedIn
+  ],
   async (req: Request, res: Response, next: NextFunction) => {
     // Check if authorId query parameter was supplied
     if (req.query.author !== undefined) {
@@ -35,16 +38,20 @@ router.get(
     }
 
     const allFreets = await FreetCollection.findAll();
-    const response = allFreets.map(util.constructFreetResponse);
+    const userId = (req.session.userId as string) ?? ''; 
+    const response = await Promise.all(allFreets.map(async (x)=> await util.constructFreetResponse(x,userId)));
     res.status(200).json(response);
   },
   [
     userValidator.isAuthorExists
   ],
   async (req: Request, res: Response) => {
+    const userId = (req.session.userId as string) ?? '';
     const authorFreets = await FreetCollection.findAllByUsername(req.query.author as string);
-    const response = authorFreets.map(util.constructFreetResponse);
-    res.status(200).json(response);
+    const response = await Promise.all(authorFreets.map(async (x)=> await util.constructFreetResponse(x,userId)));
+    const filteredRes = response.filter(x => x.author!=='Anonymous User');
+    //if an anonymous freet shows up the author's identity is exposed
+    res.status(200).json(filteredRes);
   }
 );
 
@@ -63,15 +70,16 @@ router.post(
   '/',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isValidFreetContent
+    freetValidator.isValidFreetContent,
+    freetValidator.isValidAnonymousRequest
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
-    const freet = await FreetCollection.addOne(userId, req.body.content);
+    const freet = await FreetCollection.addOne(userId, req.body.content,req.body.anonymousTo);
 
     res.status(201).json({
       message: 'Your freet was created successfully.',
-      freet: util.constructFreetResponse(freet)
+      freet: await util.constructFreetResponse(freet,userId)
     });
   }
 );
@@ -112,6 +120,7 @@ router.delete(
  *                 of the freet
  * @throws {404} - If the freetId is not valid
  * @throws {400} - If the freet content is empty or a stream of empty spaces
+ * @throws {406} - if the anonymousTo is not a valid entry in the enum
  * @throws {413} - If the freet content is more than 140 characters long
  */
 router.put(
@@ -119,14 +128,31 @@ router.put(
   [
     userValidator.isUserLoggedIn,
     freetValidator.isFreetExists,
-    freetValidator.isValidFreetModifier,
+    freetValidator.isValidFreetModifier 
+  ],
+  async(req: Request, res: Response, next: NextFunction) => {
+    // Check if authorId query parameter was supplied
+    if (req.body.anonymousTo !== undefined) {
+      const userId = (req.session.userId as string) ?? '';
+      freetValidator.isValidAnonymousRequest(req,res,undefined);
+      const freet = await FreetCollection.updateAnonymity(req.params.freetId, req.body.anonymousTo)
+      res.status(200).json({
+        message: `Your freet's anonymity was updated successfully to:${req.body.anonymousTo}`,
+        freet: await util.constructFreetResponse(freet,userId)
+      });
+    }else{
+      next();
+      return;
+    }
+  },[
     freetValidator.isValidFreetContent
   ],
   async (req: Request, res: Response) => {
+    const userId = (req.session.userId as string) ?? '';
     const freet = await FreetCollection.updateOne(req.params.freetId, req.body.content);
     res.status(200).json({
-      message: 'Your freet was updated successfully.',
-      freet: util.constructFreetResponse(freet)
+      message: 'Your freet content was updated successfully.',
+      freet: await util.constructFreetResponse(freet,userId)
     });
   }
 );

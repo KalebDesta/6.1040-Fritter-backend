@@ -175,12 +175,6 @@ The following api routes have already been implemented for you (**Make sure to d
 
 This renders the `index.html` file that will be used to interact with the backend
 
-#### `GET /api/freets` - Get all the freets
-
-**Returns**
-
-- An array of all freets sorted in descending order by date modified
-
 #### `GET /api/freets?author=USERNAME` - Get freets by author
 
 **Returns**
@@ -197,6 +191,8 @@ This renders the `index.html` file that will be used to interact with the backen
 **Body**
 
 - `content` _{string}_ - The content of the freet
+- `anonymousTo` _{string}_ - To whom the Freet will be anonymous to("None","Followers","NonFollowers","All")
+
 
 **Returns**
 
@@ -208,6 +204,7 @@ This renders the `index.html` file that will be used to interact with the backen
 - `403` if the user is not logged in
 - `400` If the freet content is empty or a stream of empty spaces
 - `413` If the freet content is more than 140 characters long
+- `405` if the anonymousTo is not a valid entry
 
 
 #### `DELETE /api/freets/:freetId?` - Delete an existing freet
@@ -240,6 +237,24 @@ This renders the `index.html` file that will be used to interact with the backen
 - `403` if the user is not the author of the freet
 - `400` if the new freet content is empty or a stream of empty spaces
 - `413` if the new freet content is more than 140 characters long
+
+#### `PUT /api/freets/:freetId?` - update to whom the freet is anonymous(which users will not access the User from the Freet)
+
+**Body**
+
+- `anonymousTo` _{string}_ - To whom the Freet will be anonymous to("None","Followers","Non-Followers","Everyone").
+
+**Returns**
+
+- A success message
+- An object with the updated freet
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the freetId is invalid
+- `403` if the user is not the author of the freet
+- `406` if the anonymousTo is not a valid entry in the enum
 
 #### `POST /api/users/session` - Sign in user
 
@@ -315,29 +330,24 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `403` if the user is not logged in
 
-#### `GET /api/hashtags` - Get all the hashtags
+#### `GET /api/hashtags?tagname=HASHTAG` - Get freets that contain the HASHTAG 
 
 **Returns**
-
-- An array of all hashtags sorted in descending order by date created
-
-#### `GET /api/freets?hashtag=HASHTAG` - Get freets with hashtag
-
-**Returns**
-
-- An array of freets created with the hashtag `hashtag`
+- success message
+- An array of freets created with the hashtag with tagname `HASHTAG`
 
 **Throws**
 
-- `400` if `hashtag` is not given
-- `404` if `hashtag` is not a recognized hashtag
+- `400` if `tagname` is not given or is empty or a stream of empty spaces
+- `404` if a hashtag with `tagname` is not found
 
-
+ 
 #### `Post /api/hashtags` - create a new hashtag
 
 **Body**
 
-- `content` _{string}_ - The name of the hashtag
+- `tagname` _{string}_ - the name of the hashtag
+- `freetId` _{string}_ The Id of the post associated with the hashtag
 
 **Returns**
 
@@ -347,10 +357,16 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
-- `400` If the hashtag content is empty or a stream of empty spaces
-- `413` If the hashtag content is more than 140 characters long
+- `400` If the tagname empty or a stream of empty spaces
+- `413` If the tagname is more than 50 characters long
+- `404` If the freetId is invalid
 
-#### `DELETE /api/freet?hashtag=hashtagId` - Delete an existing hashtag from a freet
+#### `DELETE /api/hashtags/:freetId?` - Delete an existing hashtag from a freet
+
+**Body**
+
+- `tagname` _{string}_ - the name of the hashtag
+
 
 **Returns**
 
@@ -358,16 +374,16 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `403` if the user is not logged in
-- `403` if the user is not the author of the freet
-- `404` if the freetId is invalid
-- `405` if the hashtagID is invalid
+- `403` if the user is not logged in or if the user is not the author of the post
+- `404` if the freetId is invalid 
+- `406` if the tagname is invalid or is not contained with in post
 
-#### `Post /api/follow` - add the object to the list of objects that are followed
 
-**body**
+#### `Post /api/follow` - add the user to the list of objects that are followed
 
-- `otherUserId`|`hashtagId`- _{string}_ - the Id of the object the `user` wants to follow
+**Body**
+
+- `username`- _{string}_ - the username of the `user` to follow
 
 **Returns**
 
@@ -376,58 +392,16 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `403` - if the user already follows the object
-- `404` - if the user is not found
-- `405` - if the user is not logged in
+- `403` if the user is not logged in
+- `404` if the user is not found
+- `405` if the user already follows the object
 
-#### `Delete /api/follow/:followId` - remove the object from the list of objects that are followed
 
-**Returns**
-
-- A success message
-
-**Throws**
-
-- `403` - if the user is not logged in or the user is not the follower in the follow 
-- `404` - if the user does not follow the object
-
-#### `GET /api/anonymous-freets` - Get all the anonymous freets
-
-**Returns**
-
-- An array of all anonymous freets sorted in descending order by date modified
-
-#### `GET /api/anonymous-freets?author=USERNAME` - Get anonymous-freets by author
-
-**Returns**
-
-- An array of anonymous-freets created by user with username `author`
-
-**Throws**
-
-- `400` if `author` is not given
-- `404` if `author` is not a recognized username of any user
-
-#### `POST /api/anonymous-freets` - Create a new anonymous-freet
+#### `Delete /api/follow` - stop following the user described 
 
 **Body**
 
-- `content` _{string}_ - The content of the anonymous-freet
-- `anonymousTo` _set{user}_ -the users that will not see the user
-
-**Returns**
-
-- A success message
-- A object with the created anonymous-freet
-
-**Throws**
-
-- `403` if the user is not logged in
-- `400` If the freet content is empty or a stream of empty spaces
-- `413` If the freet content is more than 140 characters long
-
-
-#### `DELETE /api/anonymous-freets/:anonymous-freetId?` - Delete an existing freet
+- `username`- _{string}_ - the username of the `user` to be unfollowed
 
 **Returns**
 
@@ -436,58 +410,51 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
-- `403` if the user is not the author of the anonymous-freet
-- `404` if the anonymous-freetId is invalid
+- `404` if the user does not follow the user with `username`
+- `405` the user is not the follower in the follow 
 
-#### `PUT /api/anonymous-freets/:anonymous-freetId?` - Update an existing anonymous-freet
+
+#### `Post /api/subscribe` - add the hashtag to the list of hashtags that are followed
 
 **Body**
 
-- `content` _{string}_ - The new content of the anonymous-freet
+- `tagname`- _{string}_ - the hashtag with `tagname` that a user wants to subscribe to
 
 **Returns**
 
 - A success message
-- An object with the updated freet
+- A subscribe object
 
 **Throws**
 
 - `403` if the user is not logged in
-- `404` if the anonymous-freetId is invalid
-- `403` if the user is not the author of the anonymous-freet
-- `400` if the new anonymous-freet content is empty or a stream of empty spaces
-- `413` if the new anonymous-freet content is more than 140 characters long
+- `404` if the hashtag is not found
+- `405` if the user is already subscribed to the hashtag
 
-#### `PUT /api/anonymous-freets/:anonymous-freetID?` - Update an existing anonymous-freets users who can see the user
+
+#### `Delete /api/subscribe` - stop following the user described 
 
 **Body**
 
-- `anonymous-to` _set{user}_ -the users that will not see the user
+- `tagname`- _{string}_ - the hashtag with `tagname` that a user wants to subscribe to
 
 **Returns**
 
 - A success message
-- A object with the created anonymous-freet
+- A subscribe object
 
 **Throws**
 
 - `403` if the user is not logged in
-- `404` if the anonymous-freetId is invalid
-- `403` if the user is not the author of the anonymous-freet
-- `400` if the new anonymous-freet content is empty or a stream of empty spaces
-- `413` if the new anonymous-freet content is more than 140 characters long
+- `404` if the user is not subscribed to the hashtag with `tagname`
+- `405` the user is not the subscriber in the subscribe object
 
-#### `GET /api/feed` - Get all the freets or anonymous freets from any object that the user follows 
 
-**Returns**
-
-- An array of all freets and anonymous freets sorted in descending order by date modified
-
-#### `Post /api/Mute-topics/` - add the topics given to the list of muted topics
+#### `Post /api/mute-topics` - add the topics given to the list of muted topics
 
 **Body**
 
-- `topics` _set{string}_ - the topics that will be added to the muted list
+- `topic` _{string}_ - the topic that will be added to the muted list
 
 **Returns**
 
@@ -496,9 +463,36 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
-- `400` if the set of topics has a topic that is empty or a stream of empty spaces
+- `400` if the topic is empty or a stream of empty spaces
+- `405` if the topic has already been added
 
-#### `Get /api/Mute-topics/suggestions/:topic?` - get topics that are related to the inserted topic 
+#### `Delete /api/mute-topics` - delete the topic from the list of muted topics
+
+**Body**
+
+-`topic` _{string}_ - the topic that will be removed from Muted topics
+
+**Returns**
+
+-A success message
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the topic does not exist with in the muted topics
+
+#### `Get /api/mute-topics` - Get all the muted topics that a user has muted
+
+**Returns**
+
+- success message
+- An array of topics that have been muted by the logged in user
+
+**Throws**
+
+- `403` if the user is not logged in
+
+#### `Get /api/mute-topics/suggestions/:topic?` - get topics that are related to the inserted topic 
 
 **Returns**
 
@@ -507,4 +501,4 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
-- `400` if the set of topics has a topic that is empty or a stream of empty spaces
+- `400` if the topic is empty or a stream of empty spaces

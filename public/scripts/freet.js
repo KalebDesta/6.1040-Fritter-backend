@@ -29,6 +29,12 @@ function editFreet(fields) {
     .catch(showResponse);
 }
 
+function editFreetAnonymity(fields) {
+  fetch(`/api/freets/${fields.id}`, {method: 'PUT', body: JSON.stringify(fields), headers: {'Content-Type': 'application/json'}})
+    .then(showResponse)
+    .catch(showResponse);
+}
+
 function deleteFreet(fields) {
   fetch(`/api/freets/${fields.id}`, {method: 'DELETE'})
     .then(showResponse)

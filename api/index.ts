@@ -11,7 +11,11 @@ import dotenv from 'dotenv';
 import * as userValidator from '../user/middleware';
 import {userRouter} from '../user/router';
 import {freetRouter} from '../freet/router';
-import {followRouter} from '../follow/router'; 
+import {followRouter} from '../follow/router';
+import {hashtagRouter} from '../hashtag/router';
+import {subscribeRouter} from '../subscribe/router';
+import {muteTopicsRouter} from '../mute-topics/router';
+import {feedRouter} from '../feed/router';
 
 // Load environmental variables
 dotenv.config({});
@@ -78,6 +82,10 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/users', userRouter);
 app.use('/api/freets', freetRouter);
 app.use('/api/follow',followRouter);
+app.use('/api/hashtags',hashtagRouter);
+app.use('/api/subscribe',subscribeRouter);
+app.use('/api/mute-topics',muteTopicsRouter);
+app.use('/api/feed', feedRouter);
 
 // Catch all the other routes and display error message
 app.all('*', (req: Request, res: Response) => {

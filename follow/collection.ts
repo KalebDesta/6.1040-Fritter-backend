@@ -13,7 +13,7 @@ import UserCollection from '../user/collection';
      *
      * @param {string} followerId - The id of the user who wants to follow
      * @param {string} followedId - The id of the user who will be followed
-     * @return {Promise<HydratedDocument<Follow>>} - The newly created freet
+     * @return {Promise<HydratedDocument<Follow>>} - The newly created follow
      */
     static async addOne(followerId: Types.ObjectId | string, followedId: Types.ObjectId | string): Promise<HydratedDocument<Follow>> {
         const date = new Date();
@@ -44,9 +44,15 @@ import UserCollection from '../user/collection';
      */
     static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Follow>>> {
         const user = await UserCollection.findOneByUsername(username);
-        return FollowModel.find({followerId: user._id});
+        return FollowModel.find({followerId: user._id}).populate(['followerId','followedId']);
     }
-
+    /**
+     * get the follow object from both follower and followed
+     * 
+     * @param followerId - the id of the follower
+     * @param followedId - the id of the followed
+     * @returns a follow object
+     */
     static async findOneByParticipants(followerId:Types.ObjectId | string, followedId:Types.ObjectId | string):Promise<HydratedDocument<Follow>>{
         const follow = await FollowModel.findOne({followerId: followerId, followedId: followedId})
         return follow
@@ -54,8 +60,8 @@ import UserCollection from '../user/collection';
     /**
      * Delete a follow with given followId.
      *
-     * @param {string} freetId - The freetId of freet to delete
-     * @return {Promise<Boolean>} - true if the freet has been deleted, false otherwise
+     * @param {string} followId - The freetId of follow to delete
+     * @return {Promise<Boolean>} - true if the follow has been deleted, false otherwise
      */
     static async deleteOne(followId: Types.ObjectId | string): Promise<boolean> {
         const follow = await FollowModel.deleteOne({_id: followId});

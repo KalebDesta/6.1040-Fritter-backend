@@ -34,13 +34,24 @@ const formsAndHandlers = {
   'change-password': changePassword,
   'sign-in': signIn,
   'sign-out': signOut,
-  'view-all-freets': viewAllFreets,
   'view-freets-by-author': viewFreetsByAuthor,
   'create-freet': createFreet,
   'edit-freet': editFreet,
   'delete-freet': deleteFreet,
   'unfollow-user': unfollowUser,
-  'follow-user': followUser
+  'follow-user': followUser,
+  "view-following": getFollowing,
+  "create-hashtag": createHashtag,
+  "get-hashtag": viewFreetsWithHashtag,
+  "delete-hashtag": deleteHashtag,
+  "edit-freet-anonymity":editFreetAnonymity,
+  'subscribe-hashtag' :subscribeHashtag,
+  'unsubscribe-hashtag' :unsubscribeHashtag,
+  'view-subscribed': getSubscribed,
+  'mute-topic': muteTopic,
+  'unmute-topic': unmuteTopic,
+  'view-muted-topics': getMutedTopics,
+  'view-feed':viewFeed
 };
 
 // Attach handlers to forms

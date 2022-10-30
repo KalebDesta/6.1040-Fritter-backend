@@ -1,5 +1,5 @@
 import type {HydratedDocument, Types} from 'mongoose';
-import type {Freet} from './model';
+import type {Freet, ViewerTypes} from './model';
 import FreetModel from './model';
 import UserCollection from '../user/collection';
 
@@ -19,12 +19,14 @@ class FreetCollection {
    * @param {string} content - The id of the content of the freet
    * @return {Promise<HydratedDocument<Freet>>} - The newly created freet
    */
-  static async addOne(authorId: Types.ObjectId | string, content: string): Promise<HydratedDocument<Freet>> {
+  static async addOne(authorId: Types.ObjectId | string, content: string, anonymousTo:string): Promise<HydratedDocument<Freet>> {
     const date = new Date();
+    const enumAnonymousTo = anonymousTo as ViewerTypes;
     const freet = new FreetModel({
       authorId,
       dateCreated: date,
       content,
+      anonymousTo: enumAnonymousTo,
       dateModified: date
     });
     await freet.save(); // Saves freet to MongoDB
@@ -77,6 +79,20 @@ class FreetCollection {
     return freet.populate('authorId');
   }
 
+  /**
+   * update to whom the freet is anonymous to
+   * 
+   * @param {string} freetId - The id of the freet to be updated
+   * @param {ViewerTypes} anonymousTo - The new users who will see the freet as an anonymous freet
+   * @returns {Promise<HydratedDocument<Freet>>} - The newly updated freet
+   */
+  static async updateAnonymity(freetId: Types.ObjectId | string, anonymousTo:string): Promise<HydratedDocument<Freet>> {
+    const freet = await FreetModel.findOne({_id: freetId});
+    freet.anonymousTo = anonymousTo as ViewerTypes;
+    freet.dateModified = new Date();
+    await freet.save();
+    return freet.populate('authorId');
+  }
   /**
    * Delete a freet with given freetId.
    *
