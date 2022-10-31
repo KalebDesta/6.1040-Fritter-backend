@@ -29,7 +29,7 @@ const isFreetExists = async (req: Request, res: Response, next: NextFunction) =>
 const isValidAnonymousRequest = async (req: Request, res: Response, next: NextFunction| undefined) => {
   const {anonymousTo} = req.body as {anonymousTo: string};
   if (!(anonymousTo in ViewerTypes)){
-    res.status(406).json({
+    res.status(405).json({
       error: "A freet can only be anonymous to: none, followers, nonFollowers, all"
     });
     return;
@@ -39,6 +39,7 @@ const isValidAnonymousRequest = async (req: Request, res: Response, next: NextFu
   };
   return;
 }
+
 
 /**
  * Checks if the content of the freet in req.body is valid, i.e not a stream of empty

@@ -14,6 +14,7 @@ const router = express.Router();
  *
  * @return {FreetResponse[]} - A list of all the freets sorted in descending
  *                      order by date modified
+ * @throws {403} - If the user is not logged in
  */
 router.get(
 '/',
