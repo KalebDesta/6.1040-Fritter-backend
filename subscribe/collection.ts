@@ -59,7 +59,7 @@ import { Hashtag } from 'hashtag/model';
     }
 
     /**
-      * get the follow object with both subscriberId and hashtagName
+      * get the subscribe object with both subscriberId and hashtagName
       * 
       * @param subscriberId - The id of the subscribing user
       * @param hashtagName - the name of the hashtag they want to subscribe to 

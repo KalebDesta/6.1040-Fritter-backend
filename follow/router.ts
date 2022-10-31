@@ -69,12 +69,13 @@ router.get(
   /**
    * Delete a freet
    *
-   * @name DELETE /api/follow/:id
+   * @name DELETE /api/follow/:username?
    *
    * @param {string} username - the username to unfollow
    * @return {string} - A success message
    * @throws {403} - If the user is not logged in 
-   * @throws {404} - If the user does not follow the username
+   * @throws {404} - If `username` does not exist
+   * @throws {405} - if the user does not follow the user with `username`
    */
   router.delete(
     '/:username?',

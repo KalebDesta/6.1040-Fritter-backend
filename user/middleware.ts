@@ -26,7 +26,7 @@ const isCurrentSessionUserExists = async (req: Request, res: Response, next: Nex
 };
 
 /**
- * Checks if a username in req.body is valid, that is, it matches the username regex
+ * Checks if a username in req.body is valid, that is, it matches the username regex and that it is not 'Anonymous User'
  */
 const isValidUsername = (req: Request, res: Response, next: NextFunction) => {
   const usernameRegex = /^\w+$/i;
@@ -38,7 +38,14 @@ const isValidUsername = (req: Request, res: Response, next: NextFunction) => {
     });
     return;
   }
+  if (req.body.username === "Anonymous User"){
+    res.status(410).json({
+      error:{
+        username: '"Anonymous User" cannot be a username.'
+      }
+    });
 
+  }
   next();
 };
 

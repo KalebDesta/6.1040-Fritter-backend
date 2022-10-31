@@ -26,8 +26,7 @@ import MutedTopicsCollection from './collection';
  */
  const isTopicNotMuted = async (req: Request, res: Response, next: NextFunction) => {
     const userId = (req.session.userId as string) ?? '';
-    const validFormat = Types.ObjectId.isValid(req.params.topic);
-    const mutedTopic = validFormat ? await MutedTopicsCollection.findOne(userId,req.params.topic) : '';
+    const mutedTopic = await MutedTopicsCollection.findOne(userId,req.params.topic);
     if (!mutedTopic) {
       res.status(404).json({
         error: {

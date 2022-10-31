@@ -12,7 +12,7 @@ const isFollowExists = async (req: Request, res: Response, next: NextFunction) =
   const otherUser = await UserCollection.findOneByUsername(req.params.username);
   const follow = await FollowCollection.findOneByParticipants(userId,otherUser._id);
   if (!follow) {
-    res.status(404).json({
+    res.status(405).json({
       error: {
         followNotFound: `You do not currently follow ${req.params.username}.`
       }
@@ -47,7 +47,7 @@ const isFollowExists = async (req: Request, res: Response, next: NextFunction) =
     const otherUser = await UserCollection.findOneByUsername(req.body.username);
     const follow = await FollowCollection.findOneByParticipants(userId,otherUser._id);
     if (follow) {
-      res.status(404).json({
+      res.status(405).json({
         error: {
           followNotFound: `the user ${req.body.username} is already followed.`
         }
@@ -60,7 +60,6 @@ const isFollowExists = async (req: Request, res: Response, next: NextFunction) =
  
   const isObjectExistsUnfollow = async (req: Request, res: Response, next: NextFunction) => {
     const other= await UserCollection.findOneByUsername(req.params.username)
-    console.log(other)
     if(!other){
         res.status(404).json({
             error: 'the user does not exist'

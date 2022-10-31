@@ -175,6 +175,15 @@ The following api routes have already been implemented for you (**Make sure to d
 
 This renders the `index.html` file that will be used to interact with the backend
 
+#### `GET /api/feed` - Get Freets from followed users, subscribed hashtags, which do not contain muted topics
+
+**Returns**
+- An array of freets
+
+**Throws**
+- `403` If the user is not logged in
+
+
 #### `GET /api/freets?author=USERNAME` - Get freets by author
 
 **Returns**
@@ -254,7 +263,7 @@ This renders the `index.html` file that will be used to interact with the backen
 - `403` if the user is not logged in
 - `404` if the freetId is invalid
 - `403` if the user is not the author of the freet
-- `406` if the anonymousTo is not a valid entry in the enum
+- `405` if the anonymousTo is not a valid entry
 
 #### `POST /api/users/session` - Sign in user
 
@@ -272,6 +281,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `403` if the user is already logged in
 - `400` if username or password is not in correct format format or missing in the req
+- `410` If the user tries to use 'Anonymous User' as username
 - `401` if the user login credentials are invalid
 
 #### `DELETE /api/users/session` - Sign out user
@@ -300,6 +310,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `403` if there is a user already logged in
 - `400` if username or password is in the wrong format
+- `410` If the user tries to use 'Anonymous User' as username
 - `409` if username is already in use
 
 #### `PUT /api/users` - Update a user's profile
@@ -318,6 +329,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `403` if the user is not logged in
 - `400` if username or password is in the wrong format
+- `410` If the user tries to use 'Anonymous User' as username
 - `409` if the username is already in use
 
 #### `DELETE /api/users` - Delete user
@@ -359,7 +371,9 @@ This renders the `index.html` file that will be used to interact with the backen
 - `403` if the user is not logged in
 - `400` If the tagname empty or a stream of empty spaces
 - `413` If the tagname is more than 50 characters long
+- `415` If the user is not the author of the freet
 - `404` If the freetId is invalid
+- `406` If the hashtag already exists
 
 #### `DELETE /api/hashtags/:freetId?` - Delete an existing hashtag from a freet
 
@@ -375,8 +389,20 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in or if the user is not the author of the post
+- `400` If the tagname empty or a stream of empty spaces
+- `413` If the tagname is more than 50 characters long
+- `415` If the user is not the author of the freet
 - `404` if the freetId is invalid 
 - `406` if the tagname is invalid or is not contained with in post
+
+#### `Get /api/follow` - get the array of users that are followed
+
+**Returns**
+- a success message
+- an array of usernames of users that are followed
+
+**Throws**
+- `403` If the user is not logged in
 
 
 #### `Post /api/follow` - add the user to the list of objects that are followed
@@ -397,11 +423,7 @@ This renders the `index.html` file that will be used to interact with the backen
 - `405` if the user already follows the object
 
 
-#### `Delete /api/follow` - stop following the user described 
-
-**Body**
-
-- `username`- _{string}_ - the username of the `user` to be unfollowed
+#### `Delete /api/follow/:username?` - stop following the user described 
 
 **Returns**
 
@@ -410,9 +432,17 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
-- `404` if the user does not follow the user with `username`
-- `405` the user is not the follower in the follow 
+- `404` If `username` does not exist
+- `405` if the user does not follow the user with `username`
 
+#### `Get /api/subscribe` - get the array of tagnames that are subscribed to
+
+**Returns**
+- a success message
+- an array of Hashtag names of Hashtags that the user is subscribed to
+
+**Throws**
+- `403` If the user is not logged in
 
 #### `Post /api/subscribe` - add the hashtag to the list of hashtags that are followed
 
@@ -447,8 +477,17 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `403` if the user is not logged in
 - `404` if the user is not subscribed to the hashtag with `tagname`
-- `405` the user is not the subscriber in the subscribe object
 
+#### `Get /api/mute-topics` - Get all the muted topics that a user has muted
+
+**Returns**
+
+- success message
+- An array of topics that have been muted by the logged in user
+
+**Throws**
+
+- `403` if the user is not logged in
 
 #### `Post /api/mute-topics` - add the topics given to the list of muted topics
 
@@ -466,11 +505,7 @@ This renders the `index.html` file that will be used to interact with the backen
 - `400` if the topic is empty or a stream of empty spaces
 - `405` if the topic has already been added
 
-#### `Delete /api/mute-topics` - delete the topic from the list of muted topics
-
-**Body**
-
--`topic` _{string}_ - the topic that will be removed from Muted topics
+#### `Delete /api/mute-topics/:topic?` - delete the topic from the list of muted topics
 
 **Returns**
 
@@ -481,24 +516,5 @@ This renders the `index.html` file that will be used to interact with the backen
 - `403` if the user is not logged in
 - `404` if the topic does not exist with in the muted topics
 
-#### `Get /api/mute-topics` - Get all the muted topics that a user has muted
 
-**Returns**
 
-- success message
-- An array of topics that have been muted by the logged in user
-
-**Throws**
-
-- `403` if the user is not logged in
-
-#### `Get /api/mute-topics/suggestions/:topic?` - get topics that are related to the inserted topic 
-
-**Returns**
-
-- a set of topics that are closely related to `topic`
-
-**Throws**
-
-- `403` if the user is not logged in
-- `400` if the topic is empty or a stream of empty spaces

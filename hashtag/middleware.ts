@@ -8,7 +8,7 @@ import HashtagCollection from './collection';
  */
  const isFreetExists = async (req: Request, res: Response, next: NextFunction) => {
     const validFormat = Types.ObjectId.isValid(req.body.freetId);
-    const freet = validFormat ? await FreetCollection.findOne(req.body.freetId) : '';
+    const freet = await FreetCollection.findOne(req.body.freetId);
     if (!freet) {
       res.status(404).json({
         error: {
@@ -116,12 +116,15 @@ const isHashtagInFreet = async (req: Request, res: Response, next: NextFunction)
 const isValidBodyModifier =async (req: Request, res: Response, next: NextFunction) => {
     const freet = await FreetCollection.findOne(req.body.freetId);
     const userId = req.session.userId ;
-    if(freet.authorId!==userId){
+    console.log('author',freet.authorId._id.toString())
+    console.log('user',userId)
+    if(freet.authorId._id.toString()!==userId){
         res.status(415).json({
             error: 'only the author of a freet can add a hashtag to a freet!'
         });
+        return;
     }    
-
+  next();
 }
   export {
     isValidBodyTagName,

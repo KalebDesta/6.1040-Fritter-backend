@@ -36,7 +36,7 @@ import {MuteTopic} from '../mute-topics/model';
                 const addedFreet = await FreetCollection.findOne(hashtag.freetId);
                 let alreadyThere = false;
                 for(const freet of freets){
-                    if(freet._id === addedFreet._id) alreadyThere = true;
+                    if(freet._id.toString() === addedFreet._id.toString()) alreadyThere = true;
                 }
                 if(!alreadyThere) freets.push(addedFreet);
             }

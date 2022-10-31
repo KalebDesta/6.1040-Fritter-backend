@@ -19,6 +19,7 @@ const router = express.Router();
  * @throws {400} - If username or password is  not in the correct format,
  *                 or missing in the req
  * @throws {401} - If the user login credentials are invalid
+ * @throws {410} - If the user tries to use 'Anonymous User' as username
  *
  */
 router.post(
@@ -74,6 +75,7 @@ router.delete(
  * @throws {403} - If there is a user already logged in
  * @throws {409} - If username is already taken
  * @throws {400} - If password or username is not in correct format
+ * @throws {410} - If the user tries to use 'Anonymous User' as username
  *
  */
 router.post(
@@ -105,6 +107,7 @@ router.post(
  * @throws {403} - If user is not logged in
  * @throws {409} - If username already taken
  * @throws {400} - If username or password are not of the correct format
+ * @throws {410} - If the user tries to use 'Anonymous User' as username
  */
 router.put(
   '/',

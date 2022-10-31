@@ -18,7 +18,6 @@ const router = express.Router();
  * @return {FreetResponse[]} - An array of freets that contain tagname
  * @throws {400} - if tagname is not given or is empty or a stream of empty spaces
  * @throws {404} - if a hashtag with `tagname` is not found
- * @throws {405} - if the hashtag is already added 
  */
 router.get('/', 
     [
@@ -48,7 +47,9 @@ router.get('/',
  * @throws {403} - if the user is not logged in
  * @throws {400} - If the tagname empty or a stream of empty spaces
  * @throws {413} - If the tagname is more than 50 characters long
+ * @throws {415} - If the user is not the author of the freet
  * @throws {404} - If the freetId is invalid
+ * @throws {406} - If the hashtag already exists
  */
 router.post(
     '/',
@@ -76,6 +77,7 @@ router.post(
  * @throws {403} - if the user is not logged in or if the user is not the author of the post
  * @throws {400} - If the tagname empty or a stream of empty spaces
  * @throws {413} - If the tagname is more than 50 characters long
+ * @throws {415} - If the user is not the author of the freet
  * @throws {404} - if the freetId is invalid 
  * @throws {406} - if the tagname is not contained with in post
  */

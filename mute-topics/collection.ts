@@ -65,18 +65,6 @@ import MuteTopicModel from './model';
         return await MuteTopicModel.find({topic:topic}).populate('userId');
     }
 
-    // /**
-    //  * Get suggestions of topics to mute
-    //  * 
-    //  * @param {string} userId - The id of the user
-    //  * @param {string} topic - the name of the topic they want to mute
-    //  */
-    // static async findSuggestionsForTopic(userId:Types.ObjectId | string, topic:string):Promise<Array<string>>{
-        
-
-    // }
-
-
     /**
      * Delete a muteTopic with given userId and topic.
      *
